@@ -25,7 +25,7 @@
           overflow-x: hidden;
       }
         .content {
-            display: none; /* Inicijalno sakrivanje svih sadržaja */
+            display: none;
         }
 
       .yourEvents{
@@ -63,180 +63,129 @@
 
     </style>
 </head>
-<body>
+<div>
+
+<?php
+require("db_functions.php");
+
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    //redirection on the login page if the user is not logged in
+    header("Location: login.php");
+    exit();
+}
+else{
+    $username = $_SESSION['firstName'] . " " . $_SESSION['lastName'];
+}
+?>
 
 <div class="container-fluid">
     <div class="navigation">
         <ul>
             <li>
                 <a href="#" class="link" data-target="content1">
-                    <span class="title">REGISTERED USER</span>
+                    <span class="title"><?php echo $username ?></span>
                 </a>
             </li>
-
             <li>
                 <a href="#" class="link" data-target="content2">
-                    <span class="title">Your events</span>
+                    <span class="title">Create New Event</span>
                 </a>
             </li>
-
             <li>
                 <a href="#" class="link" data-target="content3">
-                    <span class="title">Invitations</span>
+                    <span class="title">Active Events</span>
                 </a>
             </li>
-
             <li>
                 <a href="#" class="link" data-target="content4">
-                    <span class="title">Wish lists</span>
+                    <span class="title">Archived Events</span>
                 </a>
             </li>
-
             <li>
                 <a href="#" class="link" data-target="content5">
-                    <span class="title">Settings</span>
+                    <span class="title">Your Account</span>
                 </a>
             </li>
             <li>
-                <?php
-
-                echo "
-                
-                <a href='logout.php' class='link' data-target='content6'>
+                <a href='logout.php' class="link" data-target='content6'>
                     <span class='title'>Sign out</span>
                 </a>
-                ";
-              ?>
             </li>
         </ul>
     </div>
-
 </div>
-   <div id="content1" class="content">
-       <h1>Welcome registered user!</h1>
 
-   </div>
+    <div id="content1" class="content">
+        <h1>Welcome registered user!</h1>
+        <?php
+        $username = $_SESSION['firstName'];
+        echo "Welcome back, $username!";
+        ?>
+    </div>
 
     <div id="content2" class="content">
         <div class="yourEvents">
-        <?php
-        session_start();
+            <?php
 
-        if (isset($_SESSION['firstName'])) {
-            $username = $_SESSION['firstName'];
-            echo "Welcome $username again!";
-        } else {
-            // redirection on the login page if the user is not logged
-           // header("Location: register_dashboard.php");
-            //exit();
-        }
-        ?>
+            if (isset($_POST['eventName']) && isset($_POST['image']) && isset($_POST['shortText']) && isset($_POST['eventAddress']) && isset($_POST['eventCity']) && isset($_POST['eventState']) && isset($_POST['eventDate']) && isset($_POST['eventAllowComment']))
+                createNewEvent($_POST['eventName'],$_POST['image'],$_POST['shortText'],$_POST['eventAddress'],$_POST['eventCity'],$_POST['eventState'],$_POST['eventDate'],$_POST['eventAllowComment'],$_SESSION['user_id'], $con);
+            ?>
 
-        <h2>Create your event</h2>
-        <br>
-        <form class="forma" method="post" action=""  enctype="multipart/form-data">
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="inputText">Event Name</label>
-                    <input type="text" class="form-control" id="eventName" name="eventName" placeholder="Event Name">
+            <h2>Create new event</h2>
+            <br>
+            <form class="forma" method="post" action=""  enctype="multipart/form-data">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="inputText">Event Name</label>
+                        <input type="text" class="form-control" id="eventName" name="eventName" placeholder="Event Name">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label class="form-label" for="customFile">Choose image for your event</label>
+                        <input type="file" class="form-control"  id="image" name="image" />
+                    </div>
                 </div>
-                <div class="form-group col-md-6">
-                <label class="form-label" for="customFile">Choose image for your event</label>
-                <input type="file" class="form-control"  id="image" name="image" />
+                <div form="row">
+                    <div class="form-outline">
+                        <label class="form-label" for="textAreaExample2">Short Event Description</label>
+                        <textarea class="form-control" id="shortText" name="shortText" rows="4" placeholder="Less than 500 characters!"></textarea>
+                    </div>
                 </div>
-            </div>
-            <div form="row">
-                <div class="form-outline">
-                    <label class="form-label" for="textAreaExample2">Short Event Description</label>
-                    <textarea class="form-control" id="shortText" name="shortText" rows="4" placeholder="Less than 500 characters!"></textarea>
+                <div form="row">
+                    <div class="form-group">
+                        <label for="inputAddress">Address</label>
+                        <input type="text" class="form-control" id="eventAddress" name="eventAddress" placeholder="1234 Main St">
+                    </div>
                 </div>
-            </div>
-            <div form="row">
-            <div class="form-group">
-                <label for="inputAddress">Address</label>
-                <input type="text" class="form-control" id="eventAddress" name="eventAddress" placeholder="1234 Main St">
-            </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="inputCity">City</label>
-                    <input type="text" class="form-control" id="eventCity" name="eventCity">
-                </div>
-                <div class="form-group col-md-4">
-                    <label for="inputState">State</label>
-                    <input type="text" class="form-control" id="eventState" name="eventState">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="inputCity">City</label>
+                        <input type="text" class="form-control" id="eventCity" name="eventCity">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputState">State</label>
+                        <input type="text" class="form-control" id="eventState" name="eventState">
+
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="inputDate">Date</label>
+                        <input type="date" class="form-control"  id="eventDate" name="eventDate">
+                    </div>
 
                 </div>
-                <div class="form-group col-md-2">
-                    <label for="inputDate">Date</label>
-                    <input type="date" class="form-control"  id="eventDate" name="eventDate">
+                <div class="form-row">
+                    <div class="form-group  col-md-2">
+                        <label for="inputAllowComment">Allow comments</label>
+                        <input type="checkbox" class="form-control" id="eventAllowComment" name="eventAllowComment">
+                    </div>
                 </div>
+                <button type="submit" class="btn btn-primary">Create</button>
 
-            </div>
-            <div class="form-row">
-            <div class="form-group  col-md-6">
-                <label for="inputAllowComment">Allow comment</label>
-                <input type="number" class="form-control"  id="eventAllowComment" name="eventAllowComment">
-            </div>
-            <div class="form-group  col-md-6">
-                <label for="inputBlocked">Blocked</label>
-                <input type="number" class="form-control"  id="eventBlocked" name="eventBlocked">
-            </div>
-            </div>
-            <button type="submit" class="btn btn-primary">Create</button>
-        </form>
-        <br><br>
-        <h2>List of your events</h2>
-        <div class="details">
-            <div class="recentEvents">
-        <table>
-            <thead>
-            <tr>
-                <td>Event Name</td>
-                <td>Date and Time</td>
-                <td>Location</td>
-                <td>Options</td>
-            </tr>
-            </thead>
+            </form>
+            <br><br>
 
-            <tbody>
-            <tr>
-                <td>Immersive Disney Animation</td>
-                <td>May 14, 11pm - May 15, 6am CEST</td>
-                <td>2732 Newton Street, Saint Cloud Minnesota</td>
-                <td><a href="#" class="updateLink">Update</a></td>
-                <td><a href="#" class="deleteLink">Delete</a></td>
-            </tr>
-
-            <tr>
-                <td>Dino Trek</td>
-                <td>June 14, 11pm - June 15, 6am</td>
-                <td>52 Bridge Avenue, Merryville Louisiana</td>
-                <td><a href="#" class="updateLink">Update</a></td>
-                <td><a href="#" class="deleteLink">Delete</a></td>
-            </tr>
-
-            <tr>
-                <td>Much Ado About Nothing</td>
-                <td>June 17, 18pm - June 17, 20pm</td>
-                <td>3311 Sycamore Road, White Mountain Alaska</td>
-                <td><a href="#" class="updateLink">Update</a></td>
-                <td><a href="#" class="deleteLink">Delete</a></td>
-            </tr>
-
-            <tr>
-                <td>Cu At Boettcher</td>
-                <td>June 17, 18pm - June 17, 20pm</td>
-                <td>1729 South Street, Midland Texas</td>
-                <td><a href="#" class="updateLink">Update</a></td>
-                <td><a href="#" class="deleteLink">Delete</a></td>
-            </tr>
-            </tbody>
-        </table>
-            </div>
         </div>
-
-</div>
     </div>
 
     <div id="content3" class="content">
@@ -268,48 +217,109 @@
             </form>
         </div>
     </div>
-<div id="content5" class="content">
-    <div class="yourEvents">
-    <form class="form-signup text-center" id="registerForm" method="post" action="register_dashboard.php">
-        <div class="logo">
-            <img src="colorfull_logo.png">
-        </div>
-        <h2>Update your account data</h2>
-        <div class="form-group">
-            <div class="row">
-                <div class="col-md-6">
-                    <span id="nameError"></span>
-                    <input type="text" class="form-control" id="firstname1" name="firstname1" placeholder="First Name">
-                </div>
-                <div class="col-md-6">
-                    <span id="lastNameError"></span>
-                    <input type="text" class="form-control" id="lastname1" name="lastname1" placeholder="Last Name">
-                </div>
 
-                <div class="col-md-12">
-                    <input type="text" class="form-control" id="orgname1" name="orgname1" placeholder="Organization name (not necessary)">
+    <div id="content4" class="content">
+        <div class="yourEvents">
+            <h2>List of your events</h2>
+            <div class="details">
+                <div class="recentEvents">
+                    <table>
+                        <thead>
+                        <tr>
+                            <td>Event Name</td>
+                            <td>Date and Time</td>
+                            <td>Location</td>
+                            <td>Options</td>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr>
+                            <td>Immersive Disney Animation</td>
+                            <td>May 14, 11pm - May 15, 6am CEST</td>
+                            <td>2732 Newton Street, Saint Cloud Minnesota</td>
+                            <td><a href="#" class="updateLink">Update</a></td>
+                            <td><a href="#" class="deleteLink">Delete</a></td>
+                        </tr>
+
+                        <tr>
+                            <td>Dino Trek</td>
+                            <td>June 14, 11pm - June 15, 6am</td>
+                            <td>52 Bridge Avenue, Merryville Louisiana</td>
+                            <td><a href="#" class="updateLink">Update</a></td>
+                            <td><a href="#" class="deleteLink">Delete</a></td>
+                        </tr>
+
+                        <tr>
+                            <td>Much Ado About Nothing</td>
+                            <td>June 17, 18pm - June 17, 20pm</td>
+                            <td>3311 Sycamore Road, White Mountain Alaska</td>
+                            <td><a href="#" class="updateLink">Update</a></td>
+                            <td><a href="#" class="deleteLink">Delete</a></td>
+                        </tr>
+
+                        <tr>
+                            <td>Cu At Boettcher</td>
+                            <td>June 17, 18pm - June 17, 20pm</td>
+                            <td>1729 South Street, Midland Texas</td>
+                            <td><a href="#" class="updateLink">Update</a></td>
+                            <td><a href="#" class="deleteLink">Delete</a></td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-
-        <div class="form-group">
-            <span id="emailError"></span>
-            <input type="email" class="form-control" id="email1" name="email1" placeholder="Email Address">
-        </div>
-        <div class="form-group">
-            <span id="passwordError"></span>
-            <input type="password" class="form-control" id="password1" name="password1" placeholder="Password">
-        </div>
-        <div class="form-group">
-            <span id="password2Error"></span>
-            <input type="password" class="form-control" id="password21" name="confirm_password1" placeholder="Confirm password">
-        </div>
-
-        <a href='update.php?username=<?php echo $_SESSION["firstName"]; ?>' style='text-decoration: none; background-color: #2c919a; padding: 10px; color: #fff; border-radius: 5px;'>Update</a>
-    </form>
     </div>
-</div>
-<div id="content6" class="content"></div>
+
+    <div id="content5" class="content">
+        <div class="yourEvents">
+            <form class="form-signup text-center" id="registerForm" method="post" action="register_dashboard.php">
+                <div class="logo">
+                    <img src="colorfull_logo.png">
+                </div>
+                <h2>Update your account data</h2>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <span id="nameError"></span>
+                            <input type="text" class="form-control" id="firstname1" name="firstname1" placeholder="First Name">
+                        </div>
+                        <div class="col-md-6">
+                            <span id="lastNameError"></span>
+                            <input type="text" class="form-control" id="lastname1" name="lastname1" placeholder="Last Name">
+                        </div>
+
+                        <div class="col-md-12">
+                            <input type="text" class="form-control" id="orgname1" name="orgname1" placeholder="Organization name (not necessary)">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <span id="emailError"></span>
+                    <input type="email" class="form-control" id="email1" name="email1" placeholder="Email Address">
+                </div>
+                <div class="form-group">
+                    <span id="passwordError"></span>
+                    <input type="password" class="form-control" id="password1" name="password1" placeholder="Password">
+                </div>
+                <div class="form-group">
+                    <span id="password2Error"></span>
+                    <input type="password" class="form-control" id="password21" name="confirm_password1" placeholder="Confirm password">
+                </div>
+
+                <a href='update.php?username=<?php echo $_SESSION["firstName"]; ?>' style='text-decoration: none; background-color: #2c919a; padding: 10px; color: #fff; border-radius: 5px;'>Update</a>
+            </form>
+        </div>
+    </div>
+
+    <div id="content6" class="content">
+        <?php //include("logout.php"); ?>
+    </div>
+
+
+
 </div>
 <?php
 //php for creating registered user and entry data into database
@@ -332,14 +342,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $confirmPassword = $_POST["confirm_password"];
 
 
-
-
         if (empty($firstName) || empty($lastName) || empty($email) || empty($password) || empty($confirmPassword)) {
             echo "All fields required!.";
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             echo "Email is not valid!.";
         } elseif ($password !== $confirmPassword) {
-            echo "Passwords does not match!.";
+            echo "Passwords do not match!.";
         } else {
 
             $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
@@ -355,7 +363,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // get ID of registered user for making events
             $registeredUserId = $pdo->lastInsertId();
             $_SESSION['firstName'] = $firstName;
-            //prikaz unesenih podataka na registracijskoj stranici
 
                 echo "<div style='display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh;'>";
                 echo "<h1 style='text-align: center;'>Welcome " . $firstName . "</h1>";
@@ -376,7 +383,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 //php for creating events and entry data into database
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Provera da li su svi potrebni podaci dostavljeni
     if (isset($_POST["eventName"]) && isset($_FILES["image"]) && isset($_POST["shortText"]) && isset($_POST["eventAddress"]) && isset($_POST["eventCity"]) && isset($_POST["eventState"]) && isset($_POST["eventDate"]) && isset($_POST["eventAllowComment"]) && isset($_POST["eventBlocked"])) {
 
         $eventName = $_POST["eventName"];
@@ -449,7 +455,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   });
 }
 
-//JS za slanje invitations-a
   const guestName=document.getElementById("guestName");
   const guestLastName=document.getElementById("guestLastName");
   const message=document.getElementById("message");

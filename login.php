@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,7 +6,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap" rel="stylesheet">
-
     <style>
         body{
             font-family: 'Montserrat', sans-serif;
@@ -26,10 +24,10 @@
             width: 80px;
             height: 80px;
         }
-
     </style>
 </head>
 <body>
+
 <div class="container">
 
     <form class="form-signup text-center"  id="login-form" method="post" action="login_check.php">
@@ -45,7 +43,7 @@
             <input type="password" class="form-control" id="password" name="password" placeholder="Password">
         </div>
 
-        <input type="submit" class="btn btn-warning btn-block" id="login" name="login" value="Submit">
+        <input type="submit" class="btn btn-warning btn-block" id="login" name="login" value="LOG IN">
         <hr>
         <a href="#">Forgot your password?</a>
         <div class="row" style="margin-top: 20px;">

@@ -10,7 +10,6 @@ $pdo = new PDO("mysql:host=$host;dbname=$db_name;charset=utf8", $username, $pass
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // check if all necessary data are
     if (isset($_POST["email"]) && isset($_POST["password"])) {
         $email = $_POST["email"];
         $password = $_POST["password"];
@@ -21,20 +20,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $user = $stmt->fetch();
 
         if ($user && password_verify($password, $user['password'])) {
-            // The registration success
+            //if login succeeded
             session_start();
 
-            $_SESSION['email'] = $email;
-
             //session for recognizing the expecting registered user
+            $_SESSION['email'] = $email;
             $_SESSION['firstName'] = $user['first_name'];
+            $_SESSION['lastName'] = $user['last_name'];
+            $_SESSION['user_id'] = $user['id'];
 
+            //forwards to the dashboard
             header("Location: register_dashboard.php");
             exit();
         } else {
-            // if registration failed for some reason
+            //if login failed
             $errorMessage = "Email or password are incorrect!";
             echo "<script>alert('$errorMessage');</script>";
+            //header("Location: login.php");
+            //exit();
         }
     } else {
         $errorMessage = "Email and password are required!";
